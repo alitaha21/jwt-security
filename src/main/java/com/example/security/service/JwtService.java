@@ -1,19 +1,14 @@
 package com.example.security.service;
 
-import com.example.security.filter.JwtAuthenticationFilter;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.security.SecureRandom;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,8 +17,10 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private final String SECRET_KEY = setSecretKey();
-    private final static Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+    private final String SECRET_KEY;
+    public JwtService(String secretKey) {
+        SECRET_KEY = secretKey;
+    }
 
 
     public String extractUsername(String token) {
@@ -70,16 +67,6 @@ public class JwtService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-    }
-
-    private String setSecretKey() {
-        byte[] keyBytes = new byte[32];
-        SecureRandom secureRandom = new SecureRandom();
-        secureRandom.nextBytes(keyBytes);
-
-        String secretKey = Base64.getEncoder().encodeToString(keyBytes);
-        LOGGER.info(String.format("The generated key is: %s", secretKey));
-        return secretKey;
     }
 
     private Key getSigningKey() {
