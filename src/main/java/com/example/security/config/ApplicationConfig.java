@@ -1,6 +1,6 @@
 package com.example.security.config;
 
-import com.example.security.service.SecurityUserDetailsService;
+import com.example.security.service.JwtUserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -18,15 +18,15 @@ import java.util.Base64;
 @Configuration
 public class ApplicationConfig {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(ApplicationConfig.class);
-    private final SecurityUserDetailsService userDetailsService;
+    private final static Logger LOGGER = LoggerFactory.getLogger(ApplicationConfig.class);
+    private final JwtUserDetailsService userDetailsService;
 
-    public ApplicationConfig(SecurityUserDetailsService userDetailsService) {
+    public ApplicationConfig(JwtUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
     @Bean
-    public String setSecretKey() {
+    public String secretKeyGeneration() {
         byte[] keyBytes = new byte[32];
         SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(keyBytes);
@@ -38,10 +38,10 @@ public class ApplicationConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
-        return authenticationProvider;
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
     }
 
     @Bean
@@ -53,4 +53,5 @@ public class ApplicationConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }

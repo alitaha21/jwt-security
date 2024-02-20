@@ -7,12 +7,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/app")
-public class ApplicationController {
+@RequestMapping("api/admin/app")
+public class AppAdminController {
 
-    @GetMapping("welcome")
+    @GetMapping("/welcome")
     public ResponseEntity<String> welcome() {
-        return new ResponseEntity<>("Welcome to the USER secured endpoint", HttpStatus.OK);
+        return new ResponseEntity<>("Welcome from ADMIN endpoint", HttpStatus.OK);
     }
-
 }

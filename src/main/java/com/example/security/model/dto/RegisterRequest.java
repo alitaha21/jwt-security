@@ -1,20 +1,24 @@
 package com.example.security.model.dto;
 
+import com.example.security.model.Role;
+
 public class RegisterRequest {
 
     private String firstname;
     private String lastname;
     private String username;
     private String password;
+    private Role role;
 
     public RegisterRequest() {
     }
 
-    public RegisterRequest(String firstname, String lastname, String username, String password) {
+    public RegisterRequest(String firstname, String lastname, String username, String password, Role role) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.username = username;
         this.password = password;
+        this.role = role;
     }
 
     public String getFirstname() {
@@ -49,6 +53,14 @@ public class RegisterRequest {
         this.password = password;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     @Override
     public String toString() {
         return "RegisterRequest{" +
@@ -56,6 +68,7 @@ public class RegisterRequest {
                 ", lastname='" + lastname + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", role=" + role +
                 '}';
     }
 }
