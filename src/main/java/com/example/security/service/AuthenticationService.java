@@ -18,13 +18,15 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final TokenVersionStore tokenVersionStore;
 
     public AuthenticationService(UserRepository userRepository, JwtService jwtService,
-                                 PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+                                 PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenVersionStore tokenVersionStore) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.tokenVersionStore = tokenVersionStore;
     }
 
     public AuthenticationResponse register(RegisterRequest request) {
@@ -51,6 +53,7 @@ public class AuthenticationService {
         User user = userRepository.findByUsername(request.getUsername()).orElseThrow(
                 () -> new UsernameNotFoundException("Not found")
         );
+        tokenVersionStore.incrementVersion(user.getId());
         String jwtToken = jwtService.generateToken(user);
         return new AuthenticationResponse(jwtToken);
     }

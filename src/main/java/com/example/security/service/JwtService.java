@@ -1,5 +1,7 @@
 package com.example.security.service;
 
+import com.example.security.model.User;
+import com.example.security.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -16,9 +18,13 @@ import java.util.function.Function;
 public class JwtService {
 
     private final String SECRET_KEY;
+    private final TokenVersionStore tokenVersionStore;
+    private final UserRepository userRepository;
 
-    public JwtService(String secretKey) {
+    public JwtService(String secretKey, TokenVersionStore tokenVersionStore, UserRepository userRepository) {
         SECRET_KEY = secretKey;
+        this.tokenVersionStore = tokenVersionStore;
+        this.userRepository = userRepository;
     }
 
     private Boolean isTokenExpired(String token) {
@@ -43,7 +49,7 @@ public class JwtService {
         return resolver.apply(claims);
     }
 
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getSignInKey())
@@ -53,8 +59,11 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails) {
+        User user = userRepository.findByUsername(userDetails.getUsername()).get();
+        int version = tokenVersionStore.getCurrentVersion(user.getId());
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
+                .claim("ver", version)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 24*60*60*1000))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
